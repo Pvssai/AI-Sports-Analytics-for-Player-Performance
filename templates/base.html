@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Sports Analytics{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="/static/css/styles.css" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo and Brand -->
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-2xl font-bold hover:text-blue-200 transition-colors">
+                        AI Sports Analytics
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="hover:text-blue-200 transition-colors {% if request.path == '/' %}font-semibold{% endif %}">
+                        Home
+                    </a>
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors {% if request.path == '/dashboard' %}font-semibold{% endif %}">
+                        Dashboard
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white hover:text-blue-200 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden pb-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="/" class="hover:text-blue-200 transition-colors {% if request.path == '/' %}font-semibold{% endif %}">
+                        Home
+                    </a>
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors {% if request.path == '/dashboard' %}font-semibold{% endif %}">
+                        Dashboard
+                    </a>
+                    <a href="/about" class="hover:text-blue-200 transition-colors {% if request.path == '/about' %}font-semibold{% endif %}">
+                        About
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p>&copy; 2024 AI Sports Analytics. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="/" class="hover:text-blue-200 transition-colors">Home</a>
+                    <a href="/dashboard" class="hover:text-blue-200 transition-colors">Dashboard</a>
+                    <a href="/about" class="hover:text-blue-200 transition-colors">About</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html> 

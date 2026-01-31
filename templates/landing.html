@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}AI Sports Analytics - Home{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="bg-blue-700 text-white py-20">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-4xl font-bold mb-4">Advanced Sports Analytics Powered by AI</h2>
+            <p class="text-xl mb-8">Unlock insights into player performance with cutting-edge machine learning</p>
+            <a href="/dashboard" class="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                Get Started
+            </a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="custom-card p-6">
+                    <div class="text-blue-600 text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-semibold mb-2">Performance Analysis</h3>
+                    <p class="text-gray-600">Deep dive into player statistics with advanced metrics and visualizations</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="custom-card p-6">
+                    <div class="text-blue-600 text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-semibold mb-2">AI Predictions</h3>
+                    <p class="text-gray-600">Predict player performance using machine learning models</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="custom-card p-6">
+                    <div class="text-blue-600 text-4xl mb-4">📈</div>
+                    <h3 class="text-xl font-semibold mb-2">Trend Analysis</h3>
+                    <p class="text-gray-600">Track player development and identify performance patterns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">How It Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">1</div>
+                    <h3 class="font-semibold mb-2">Select Player</h3>
+                    <p class="text-gray-600">Choose from our comprehensive player database</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">2</div>
+                    <h3 class="font-semibold mb-2">Analyze Stats</h3>
+                    <p class="text-gray-600">View detailed performance metrics</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">3</div>
+                    <h3 class="font-semibold mb-2">Get Predictions</h3>
+                    <p class="text-gray-600">Receive AI-powered performance forecasts</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">4</div>
+                    <h3 class="font-semibold mb-2">Compare Players</h3>
+                    <p class="text-gray-600">Benchmark against similar players</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="bg-blue-600 text-white py-16">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+            <p class="text-xl mb-8">Explore our advanced analytics dashboard and unlock player insights</p>
+            <a href="/dashboard" class="bg-white text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                Launch Dashboard
+            </a>
+        </div>
+    </div>
+{% endblock %} 

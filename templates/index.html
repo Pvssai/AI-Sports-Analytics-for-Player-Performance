@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Sports Analytics{% endblock %}
+
+{% block content %}
+    <main class="container mx-auto p-4">
+        <!-- Error Messages -->
+        <div id="errorContainer" class="hidden"></div>
+
+        <!-- Player Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="custom-card p-4">
+                <h2 class="text-xl font-semibold mb-4">Player Analysis</h2>
+                <select id="playerSelect" class="custom-select w-full p-2 border rounded">
+                    <option value="">Select a player...</option>
+                </select>
+            </div>
+            <div class="custom-card p-4">
+                <h2 class="text-xl font-semibold mb-4">Player Comparison</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="player1Select" class="custom-select p-2 border rounded">
+                        <option value="">Player 1...</option>
+                    </select>
+                    <select id="player2Select" class="custom-select p-2 border rounded">
+                        <option value="">Player 2...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Display -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="custom-card p-4">
+                <h3 class="font-semibold mb-2">Performance Metrics</h3>
+                <div id="performanceMetrics" class="space-y-2">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-card p-4">
+                <h3 class="font-semibold mb-2">Trend Analysis</h3>
+                <div id="trendChart" class="chart-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-card p-4">
+                <h3 class="font-semibold mb-2">AI Predictions</h3>
+                <div id="predictions" class="space-y-2">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Analytics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="custom-card p-4">
+                <h3 class="font-semibold mb-2">Similar Players</h3>
+                <div id="similarPlayers" class="space-y-2">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-card p-4">
+                <h3 class="font-semibold mb-2">Feature Importance</h3>
+                <div id="featureImportance" class="chart-container">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="custom-card p-4 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Player Comparison</h2>
+            <div id="comparisonChart" class="chart-container">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Error handling function
+    function showError(message) {
+        const errorContainer = document.getElementById('errorContainer');
+        errorContainer.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+            </div>
+        `;
+        errorContainer.classList.remove('hidden');
+        setTimeout(() => {
+            errorContainer.classList.add('hidden');
+        }, 5000);
+    }
+
+    // Loading state management
+    function setLoading(elementId, isLoading) {
+        const element = document.getElementById(elementId);
+        const loadingElement = element.querySelector('.loading');
+        if (loadingElement) {
+            loadingElement.style.display = isLoading ? 'flex' : 'none';
+        }
+    }
+
+    // Fetch players on page load
+    fetch('/api/players')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch players');
+            }
+            return response.json();
+        })
+        .then(players => {
+            const playerSelect = document.getElementById('playerSelect');
+            const player1Select = document.getElementById('player1Select');
+            const player2Select = document.getElementById('player2Select');
+            
+            players.forEach(player => {
+                playerSelect.add(new Option(player, player));
+                player1Select.add(new Option(player, player));
+                player2Select.add(new Option(player, player));
+            });
+        })
+        .catch(error => {
+            showError('Error loading players: ' + error.message);
+        });
+
+    // Player selection handler
+    document.getElementById('playerSelect').addEventListener('change', function(e) {
+        if (e.target.value) {
+            const playerName = e.target.value;
+            
+            // Set loading states
+            setLoading('performanceMetrics', true);
+            setLoading('trendChart', true);
+            setLoading('predictions', true);
+            setLoading('similarPlayers', true);
+            
+            // Fetch player stats
+            fetch(`/api/player/${playerName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch player stats');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updatePerformanceMetrics(data);
+                    setLoading('performanceMetrics', false);
+                })
+                .catch(error => {
+                    showError('Error loading player stats: ' + error.message);
+                    setLoading('performanceMetrics', false);
+                });
+            
+            // Fetch player trends
+            fetch(`/api/player/${playerName}/trends`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch player trends');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateTrendChart(data);
+                    setLoading('trendChart', false);
+                })
+                .catch(error => {
+                    showError('Error loading player trends: ' + error.message);
+                    setLoading('trendChart', false);
+                });
+            
+            // Fetch predictions
+            fetch(`/api/player/${playerName}/predict`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch predictions');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updatePredictions(data);
+                    setLoading('predictions', false);
+                })
+                .catch(error => {
+                    showError('Error loading predictions: ' + error.message);
+                    setLoading('predictions', false);
+                });
+            
+            // Fetch similar players
+            fetch(`/api/player/${playerName}/similar`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch similar players');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateSimilarPlayers(data);
+                    setLoading('similarPlayers', false);
+                })
+                .catch(error => {
+                    showError('Error loading similar players: ' + error.message);
+                    setLoading('similarPlayers', false);
+                });
+        }
+    });
+
+    // Comparison handler
+    document.getElementById('player1Select').addEventListener('change', comparePlayers);
+    document.getElementById('player2Select').addEventListener('change', comparePlayers);
+
+    function comparePlayers() {
+        const player1 = document.getElementById('player1Select').value;
+        const player2 = document.getElementById('player2Select').value;
+        
+        if (player1 && player2) {
+            setLoading('comparisonChart', true);
+            
+            fetch('/api/compare', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ player1, player2 })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to compare players');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateComparisonChart(data);
+                setLoading('comparisonChart', false);
+            })
+            .catch(error => {
+                showError('Error comparing players: ' + error.message);
+                setLoading('comparisonChart', false);
+            });
+        }
+    }
+
+    function updatePerformanceMetrics(data) {
+        const metricsDiv = document.getElementById('performanceMetrics');
+        const stats = data[0];
+        
+        metricsDiv.innerHTML = `
+            <div class="grid grid-cols-2 gap-2">
+                <div class="font-medium">Points Per Game:</div>
+                <div>${stats.PointsPerGame.toFixed(1)}</div>
+                <div class="font-medium">Rebounds:</div>
+                <div>${stats.Rebounds.toFixed(1)}</div>
+                <div class="font-medium">Assists:</div>
+                <div>${stats.Assists.toFixed(1)}</div>
+                <div class="font-medium">Field Goal %:</div>
+                <div>${stats.FieldGoalPercent.toFixed(1)}%</div>
+            </div>
+        `;
+    }
+
+    function updateTrendChart(data) {
+        const trendDiv = document.getElementById('trendChart');
+        
+        // Filter out null values and use 0 as fallback
+        const points = {
+            x: ['Points', 'Rebounds', 'Assists'],
+            y: [
+                data.points.mean ?? 0,
+                data.rebounds.mean ?? 0,
+                data.assists.mean ?? 0
+            ],
+            type: 'bar',
+            name: 'Average'
+        };
+        
+        const layout = {
+            title: 'Performance Trends',
+            barmode: 'group',
+            margin: { t: 30, b: 40, l: 40, r: 20 }
+        };
+        
+        Plotly.newPlot(trendDiv, [points], layout);
+    }
+
+    function updatePredictions(data) {
+        const predictionsDiv = document.getElementById('predictions');
+        
+        if (!data || data.error) {
+            predictionsDiv.innerHTML = `
+                <div class="error-message">
+                    <p>Unable to load predictions</p>
+                </div>
+            `;
+            return;
+        }
+
+        const predictedPoints = data.predicted_points || 0;
+        const confidence = data.confidence || 0;
+        const lastUpdated = data.last_updated || 'N/A';
+
+        predictionsDiv.innerHTML = `
+            <div class="space-y-4">
+                <div class="p-4 bg-blue-50 rounded">
+                    <div class="font-medium">Predicted Points Per Game:</div>
+                    <div class="text-2xl font-bold text-blue-600">${predictedPoints.toFixed(1)}</div>
+                </div>
+                <div class="p-4 bg-green-50 rounded">
+                    <div class="font-medium">Prediction Confidence:</div>
+                    <div class="text-lg font-semibold text-green-600">${(confidence * 100).toFixed(1)}%</div>
+                </div>
+                <div class="text-sm text-gray-500">
+                    Last updated: ${lastUpdated}
+                </div>
+            </div>
+        `;
+    }
+
+    function updateSimilarPlayers(data) {
+        const similarDiv = document.getElementById('similarPlayers');
+        similarDiv.innerHTML = data.map(player => `
+            <div class="p-2 border-b hover:bg-gray-50">
+                <div class="font-medium">${player.Name}</div>
+                <div class="text-sm text-gray-600">
+                    PPG: ${player.PointsPerGame.toFixed(1)} | 
+                    REB: ${player.Rebounds.toFixed(1)} | 
+                    AST: ${player.Assists.toFixed(1)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateComparisonChart(data) {
+        const comparisonDiv = document.getElementById('comparisonChart');
+        
+        const player1 = data.player1.stats[0];
+        const player2 = data.player2.stats[0];
+        
+        const trace1 = {
+            x: ['Points', 'Rebounds', 'Assists', 'Steals', 'Blocks'],
+            y: [
+                player1.PointsPerGame,
+                player1.Rebounds,
+                player1.Assists,
+                player1.Steals,
+                player1.Blocks
+            ],
+            type: 'bar',
+            name: data.player1.stats[0].Name
+        };
+        
+        const trace2 = {
+            x: ['Points', 'Rebounds', 'Assists', 'Steals', 'Blocks'],
+            y: [
+                player2.PointsPerGame,
+                player2.Rebounds,
+                player2.Assists,
+                player2.Steals,
+                player2.Blocks
+            ],
+            type: 'bar',
+            name: data.player2.stats[0].Name
+        };
+        
+        const layout = {
+            title: 'Player Comparison',
+            barmode: 'group',
+            margin: { t: 30, b: 40, l: 40, r: 20 }
+        };
+        
+        Plotly.newPlot(comparisonDiv, [trace1, trace2], layout);
+    }
+
+    // Load feature importance on page load
+    setLoading('featureImportance', true);
+    fetch('/api/feature-importance')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch feature importance');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const featureDiv = document.getElementById('featureImportance');
+            
+            const trace = {
+                x: Object.values(data),
+                y: Object.keys(data),
+                type: 'bar',
+                orientation: 'h'
+            };
+            
+            const layout = {
+                title: 'Feature Importance',
+                xaxis: { title: 'Importance' },
+                yaxis: { title: 'Feature' },
+                margin: { t: 30, b: 40, l: 100, r: 20 }
+            };
+            
+            Plotly.newPlot(featureDiv, [trace], layout);
+            setLoading('featureImportance', false);
+        })
+        .catch(error => {
+            showError('Error loading feature importance: ' + error.message);
+            setLoading('featureImportance', false);
+        });
+</script>
+{% endblock %} 
