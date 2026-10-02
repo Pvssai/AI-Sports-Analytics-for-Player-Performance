@@ -1,3 +1,6 @@
+import os
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import pandas as pd
@@ -5,7 +8,6 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 import joblib
-import os
 from models.advanced_analytics import AdvancedPlayerAnalytics
 
 app = Flask(__name__)
