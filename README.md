@@ -58,3 +58,5 @@ A modern web application that uses AI and machine learning to analyze player per
 ## License
 
 MIT License
+## live link
+ https://ai-sports-analytics-for-player-h6n7.onrender.com
